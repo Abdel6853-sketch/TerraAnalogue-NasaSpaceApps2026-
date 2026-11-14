@@ -311,5 +311,5 @@ const KEY = "YOUR_GOOGLE_MAPS_API_KEY";
 Credits:
 - AbdElRahman Khaled
 - Ali Mohamed
-- Ahmed Mohamed
+- Ahmed Mahmoud
 - Michael Joseph
