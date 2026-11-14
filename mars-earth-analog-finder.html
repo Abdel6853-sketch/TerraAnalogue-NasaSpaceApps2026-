@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mars → Earth Analog Finder (Screening Tool)</title>
+<style>
+:root{--bg:#f4f1ee;--card:#fff;--tx:#1d1a18;--mu:#6b625b;--ac:#c1440e;--bd:#ddd5cd;--land:#d9d0c6;--sea:#e8eef2;--ok:#2a7d5f;--ok-bg:#e6f4ef;--code-bg:#ebe5df;--sel:#0077b6;--sel-bg:#e0f4ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0d14;--card:#141826;--tx:#ece8e3;--mu:#9a9fb0;--ac:#ff6a3d;--bd:#262c42;--land:#2a3150;--sea:#0e1220;--ok:#4cc9a0;--ok-bg:#122b26;--code-bg:#1c2236;--sel:#38bdf8;--sel-bg:#0f293a}}
+:root[data-theme="dark"]{--bg:#0b0d14;--card:#141826;--tx:#ece8e3;--mu:#9a9fb0;--ac:#ff6a3d;--bd:#262c42;--land:#2a3150;--sea:#0e1220;--ok:#4cc9a0;--ok-bg:#122b26;--code-bg:#1c2236;--sel:#38bdf8;--sel-bg:#0f293a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:1200px;margin:0 auto;padding:20px 16px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:17px;margin:0 0 10px}h3{font-size:14px;margin:14px 0 6px}
+.mu{color:var(--mu)}.g{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media(max-width:900px){.g{grid-template-columns:1fr}}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mu);gap:2px;flex:1;min-width:105px}
+input,select{background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px;font:inherit}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer}
+button.sec{background:var(--sel);color:#fff}
+button.gh{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
+svg{width:100%;height:auto;display:block;margin:10px 0;border-radius:8px;background:var(--sea);cursor:crosshair}
+#mm{background:#24110b}
+.st{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.st div{background:var(--bg);border-radius:8px;padding:8px}.st small{display:block;color:var(--mu);font-size:11px}.st b{font-size:15px}
+.k{display:grid;grid-template-columns:110px 1fr 40px;gap:6px;align-items:center;font-size:12px;margin:2px 0}
+.k i{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--ac) var(--v),var(--bd) var(--v))}
+.res{border:1px solid var(--bd);border-radius:10px;padding:10px;margin:8px 0;background:var(--bg)}
+.res.esel-card{border:2px solid var(--sel);background:var(--sel-bg)}
+.res h4{margin:0;display:flex;justify-content:space-between;gap:8px;font-size:15px}.res h4 span{color:var(--ok)}
+.res a{color:var(--ac);font-weight:600;font-size:12.5px;text-decoration:none;margin-right:10px}
+.res a:hover{text-decoration:underline}
+.sc{overflow-x:auto}table{border-collapse:collapse;font-size:12px;min-width:700px;width:100%}td,th{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
+details{margin-top:16px}summary{cursor:pointer;font-weight:600}
+input[type=range]{padding:0;width:100%}
+.v-ban{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;margin:10px 0 14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.v-ban b{color:var(--ac)}
+.badge.bad{background:#fdeaea;color:#b3261e;border-color:#b3261e}
+.badge.warn{background:#fff4e0;color:#9a5b00;border-color:#9a5b00}
+.badge{display:inline-block;padding:2px 7px;border-radius:99px;font-size:11px;font-weight:700;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok);white-space:nowrap}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;background:var(--code-bg);padding:2px 5px;border-radius:4px}
+.proof-box{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px;margin-top:8px;font-size:12.5px}
+.ax-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:8px}
+.ax-card{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-size:12px}
+.ax-card b{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+a.ext{color:var(--ac);text-decoration:none;font-weight:600}
+a.ext:hover{text-decoration:underline}
+#gl,#mgl{position:relative;width:100%;aspect-ratio:1/.86;max-height:480px;margin:12px 0 8px;border-radius:16px;overflow:hidden}
+#gl{background:radial-gradient(120% 90% at 50% 38%,#10244a 0%,#070d1f 55%,#03060f 100%);box-shadow:0 0 0 1px #2b3a63,0 18px 40px -18px #000,inset 0 0 60px #0a1330}
+#mgl{background:radial-gradient(120% 90% at 50% 38%,#3d150c 0%,#1a0806 55%,#0c0302 100%);box-shadow:0 0 0 1px #63281b,0 18px 40px -18px #000,inset 0 0 60px #2b0d07}
+#gl canvas,#mgl canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+#gl canvas:active,#mgl canvas:active{cursor:grabbing}
+.glh{position:absolute;left:14px;bottom:10px;z-index:1;font-size:11px;color:#8fa3cc;pointer-events:none}
+#mgl .glh{color:#dba190}
+#glc,#mglc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+#glc button,#mglc button{padding:5px 10px;font-size:12px;font-weight:500}
+#toast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;background:#2b0d07;color:#ffe3d6;border:1px solid #ff6a3d;border-radius:99px;padding:10px 16px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer;max-width:92vw;text-align:center}
+.mlink{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--ac);font-size:12.5px}
+.mlink a{cursor:pointer}
+</style></head><body><div class="w">
+<h1>Mars → Earth Analog Finder</h1>
+<p class="mu">Enter any Martian coordinate (or click the Mars map / 3D Mars globe) — and click anywhere on the Earth map / 3D Earth globe (or enter Earth coordinates) to inspect any terrestrial point, compare its similarity against Mars, or reverse-search the best Martian analog.</p>
+
+<div id="vban" class="v-ban"></div>
+
+<div class="g">
+<section class="c"><h2>1 · Martian site (click map/globe or enter coords)</h2>
+<div class="r"><label>Mars Preset<select id="pre"></select></label>
+<label>Latitude °N<input id="la" type="number" step="any" value="-5.4"></label>
+<label>Longitude °E<input id="lo" type="number" step="any" value="137.8"></label>
+<button id="go">Find Earth analogs</button></div>
+<svg id="mm" viewBox="0 0 720 360"></svg>
+<div id="mgl"><div class="glh">Drag to rotate Mars · tap the red globe to pick a Martian site</div></div><div id="mglc"></div>
+<div id="ms" class="st"></div>
+<h3>Matching weights</h3><div id="sl"></div></section>
+
+<section class="c"><h2>2 · Best Earth analogs (click Earth map/globe or enter coords)</h2>
+<div class="r">
+<label>Earth Preset<select id="epre"></select></label>
+<label>Earth Lat °N<input id="ela" type="number" step="any" placeholder="Click Earth map" value="-24.1"></label>
+<label>Earth Lon °E<input id="elo" type="number" step="any" placeholder="or enter coords" value="-69.9"></label>
+<button id="ego" class="sec">Inspect Earth point</button>
+<button id="eclr" class="gh" title="Clear custom Earth point">Reset</button>
+<label style="flex-direction:row;align-items:center;gap:6px;min-width:auto;flex:none;font-size:13px;color:var(--tx)"><input type="checkbox" id="lnk" checked style="padding:0">Link Earth ↔ Mars</label>
+</div>
+<svg id="em" viewBox="0 0 720 360"></svg><div id="gm" style="display:none;height:320px;margin:10px 0"></div>
+<div id="gl"><div class="glh">Drag to rotate Earth · tap the blue globe to pick a point</div></div><div id="glc"></div>
+<div id="esel"></div>
+<div id="rs"></div></section></div>
+
+<section class="c" style="margin-top:16px">
+<h2>3 · Model Transparency: Calibration Check, Sanity Tests &amp; Data Sources</h2>
+<p class="mu" style="margin:0 0 10px;font-size:13px">This section shows how the model computes its numbers, how well it reproduces approximate published values at 7 landing sites, and which public archives can be used to check the inputs independently. The model does not download live data from these archives.</p>
+
+<h3>3A · Live Calculation &amp; Calibration Check against 7 Landing Sites</h3>
+<div id="p3a" class="proof-box"></div>
+
+<h3>3B · Internal Sanity Checks (consistency, not scientific validation)</h3>
+<div id="p3b" class="ax-grid"></div>
+
+<h3>3C · Data Sources &amp; How They Relate to the Model</h3>
+<div class="sc" id="p3c"></div>
+</section>
+
+<section class="c" id="lim" style="margin-top:16px">
+<h2>4 · Limitations</h2>
+<ul class="mu" style="margin:0;padding-left:18px;font-size:13px">
+<li>Mars terrain, elevation, ice access and flatness are interpolated from only 25 hand-compiled reference regions, so values between regions are estimates.</li>
+<li>Mars temperature uses a simple latitude and elevation formula, not a climate model. Night lows are a rough estimate.</li>
+<li>The suitability score (<span class="mono">hab()</span>) and the matching weights are heuristic choices, not an established scientific index. Use the sliders to see how rankings change.</li>
+<li>The 23 Earth sites use approximate literature values; other Earth points are interpolated from the nearest sites and a latitude climate envelope.</li>
+<li>The calibration check in 3A compares against 7 sites whose reference values were entered by hand and used to tune the model, so it shows agreement with calibration points, not independent validation.</li>
+<li>Intended use: first-pass screening of candidate analog sites, to be followed by checks against the original datasets.</li>
+</ul></section>
+
+<details><summary>Analog dataset (23 Earth sites · 25 Mars reference regions)</summary><div class="sc" id="ds"></div></details>
+<p class="mu" id="src" style="font-size:12px"></p></div>
+<div id="toast" onclick="document.getElementById('mgl').scrollIntoView({behavior:'smooth',block:'center'});this.style.display='none'"></div>
+<script>
+const KEY=""; // Add a Google Maps JavaScript API key here when running the file on your own host
+const $=i=>document.getElementById(i),R=Math.PI/180;
+const NM={VOL:"Volcanic basalt",CRA:"Impact crater / highland",CAN:"Canyon / layered walls",DUN:"Dune field",POL:"Polar ice cap",PER:"Ice-rich periglacial plain",SED:"Sedimentary / evaporite",CAV:"Lava tubes / caves"};
+const FN={t:"Temperature",g:"Terrain",a:"Aridity",p:"Pressure / altitude",s:"Suitability"};
+const W={t:.3,g:.3,a:.1,p:.1,s:.2};
+const AF={VOLCAV:.6,CRASED:.4,CRAVOL:.35,CANSED:.5,CANCRA:.3,PERPOL:.55,DUNSED:.35,SEDPER:.25,VOLSED:.3,POLDUN:.15};
+// Mars reference regions: name, lat, lon(E), elevation km, terrain, water-ice access, flatness, resources (0-1)
+const M=[["Gale Crater",-5.4,137.8,-4.4,"SED",.3,.6,.7],["Jezero Crater",18.4,77.5,-2.6,"SED",.3,.6,.7],["Olympus Mons",18.65,-133.8,21.9,"VOL",.1,.4,.5],["Arsia Mons",-8.3,-120.1,17.7,"VOL",.1,.4,.5],["Pavonis Skylights",.4,-113.3,13.5,"CAV",.2,.3,.6],["Valles Marineris",-10,-70,-2.5,"CAN",.3,.3,.7],["Noctis Labyrinthus",-7,-101,5,"CAN",.2,.3,.6],["Hellas Planitia",-42.7,70,-7.1,"CRA",.3,.7,.6],["Argyre Planitia",-49.7,-42.4,-3.5,"CRA",.4,.7,.6],["Utopia Planitia",46,118,-4.5,"PER",.9,.9,.7],["Arcadia Planitia",47,-170,-3.5,"PER",.9,.9,.7],["Phoenix landing area",68.2,-125.7,-4.1,"PER",.95,.9,.6],["Acidalia Planitia",46,-22,-4.5,"PER",.8,.9,.6],["North polar cap",88,0,-2,"POL",1,.5,.5],["South polar cap",-87,0,3,"POL",1,.5,.5],["Olympia Undae",80.5,-178,-5,"DUN",.8,.4,.4],["Syrtis Major",8.4,69.5,0,"VOL",.1,.7,.6],["Meridiani Planum",-2,-6,-1.4,"SED",.2,.95,.7],["Mawrth Vallis",24,-19,-2.2,"SED",.3,.6,.8],["Gusev Crater",-14.6,175.5,-1.9,"VOL",.2,.8,.6],["Elysium Mons",25,147,2,"VOL",.15,.5,.5],["Tharsis plains",1,-105,7,"VOL",.1,.6,.5],["Terra Cimmeria",-35,150,1,"CRA",.3,.5,.5],["Noachis Terra",-45,20,2,"CRA",.3,.5,.5],["Cerberus Fossae",6,166,-2.5,"VOL",.4,.6,.6]];
+// Earth analogs: name, lat, lon, mean T °C, typical winter low °C, precip mm/yr, elevation m, terrain, water, flatness, resources, note
+const E=[["Atacama Desert (Yungay)",-24.1,-69.9,17,2,1,1000,"SED",.1,.8,.6,"Hyperarid, perchlorate-bearing soils"],["McMurdo Dry Valleys",-77.5,162.5,-20,-50,10,400,"PER",.4,.7,.5,"Polar desert, ice-cemented soil, patterned ground"],["Haughton Crater, Devon Island",75.4,-89.7,-16,-45,140,30,"CRA",.8,.6,.5,"Impact crater; NASA Haughton-Mars Project"],["Death Valley",36.5,-116.9,25,2,60,-86,"SED",.1,.9,.5,"Alluvial fans and evaporites"],["Mauna Kea",19.8,-155.5,1,-10,250,4200,"VOL",.2,.5,.8,"Basaltic regolith; ISRU field tests"],["Craters of the Moon",43.5,-113.5,6,-20,380,1800,"VOL",.3,.5,.6,"Basalt flows, cinder cones"],["Lava Beds National Monument",41.7,-121.5,9,-12,400,1400,"CAV",.3,.5,.5,"Lava-tube network"],["Askja, Iceland",65,-16.8,-2,-25,450,1000,"VOL",.5,.6,.6,"Basalt highlands; Apollo training site"],["Concordia (Dome C)",-75.1,123.3,-51,-80,30,3233,"POL",.9,.95,.3,"Antarctic plateau; ESA/IPEV analog base"],["Rio Tinto, Spain",37.7,-6.55,17,5,600,100,"SED",.7,.5,.7,"Acidic iron/sulfate river; Meridiani analog"],["Salar de Uyuni",-20.1,-67.5,10,-8,200,3656,"SED",.3,.99,.7,"Salt flat, clays, 3.6 km altitude"],["Dasht-e Lut",30.5,59,29,0,30,300,"DUN",.05,.5,.3,"Megadunes and yardangs"],["Namib Sand Sea",-24.7,15.3,17,5,15,400,"DUN",.2,.6,.3,"Linear and star dunes, fog water"],["Mars Desert Research Station",38.4,-110.8,12,-12,150,1370,"SED",.2,.7,.5,"Utah; clay-rich Morrison Fm.; crewed simulations"],["Qaidam Basin, China",37.5,95,3,-20,100,2800,"SED",.3,.8,.7,"Yardangs, saline basin; Mars-base test site"],["Bockfjorden, Svalbard",79.4,13,-6,-25,200,100,"VOL",.7,.4,.5,"Volcanic centers and carbonates"],["Wadi Rum, Jordan",29.6,35.4,20,5,50,900,"SED",.1,.6,.4,"Sandstone canyons and dunes"],["Axel Heiberg Island",79.4,-90.8,-15,-42,60,100,"PER",.9,.5,.6,"Cold saline springs over permafrost"],["Teide, Tenerife",28.3,-16.6,9,-5,350,2100,"VOL",.15,.6,.6,"Basaltic caldera; ESA field tests"],["Dallol, Danakil",14.2,40.3,35,22,100,-125,"SED",.2,.6,.5,"Hydrothermal salt and acid pools"],["Vostok Station",-78.5,106.8,-55,-85,20,3488,"POL",.9,.95,.3,"Coldest annual means on Earth"],["Greenland Summit",72.6,-38.5,-29,-60,220,3216,"POL",.95,.95,.3,"High ice-sheet plateau"],["Timanfaya, Lanzarote",29,-13.7,20,12,150,300,"VOL",.1,.5,.5,"Basalt fields, lava tubes"]];
+const P=["-168,66 -156,71 -125,70 -95,72 -80,68 -62,60 -55,50 -66,44 -76,35 -81,25 -97,22 -88,15 -80,8 -92,15 -105,20 -115,30 -124,40 -125,49 -140,60","-80,8 -60,10 -50,0 -35,-6 -40,-22 -58,-38 -68,-54 -75,-50 -72,-30 -81,-6","-73,78 -40,83 -20,80 -22,70 -44,60 -55,68","-10,36 -9,43 -2,48 -5,50 5,53 10,57 20,70 40,68 70,73 110,77 140,72 180,68 170,60 160,55 140,52 135,43 125,38 122,30 110,20 105,10 100,2 95,15 80,8 72,20 62,25 56,26 59,22 52,16 43,13 38,22 35,30 35,35 30,36 25,38 10,44 0,38","-17,21 -10,35 10,37 32,31 43,12 51,12 40,-5 40,-15 33,-27 20,-35 12,-17 9,0 -8,5 -17,14","114,-22 130,-12 142,-11 153,-26 147,-38 135,-35 115,-34","-180,-72 180,-72 180,-90 -180,-90"];
+// Mars major topographic/albedo feature polygons (Tharsis bulge, Valles Marineris, Syrtis Major, Hellas Planitia, Elysium, Polar caps, Arabia/Highlands)
+const MP=[
+ "-145,32 -120,35 -102,22 -95,2 -102,-20 -122,-25 -140,-12 -148,10",
+ "-102,-4 -85,-5 -60,-8 -48,-14 -62,-18 -85,-14 -102,-10",
+ "55,22 72,25 84,10 78,-8 62,-12 50,4",
+ "48,-28 72,-26 92,-36 90,-54 68,-58 46,-46",
+ "132,36 156,34 164,18 148,8 130,16",
+ "-40,32 10,38 45,24 38,-6 10,-18 -25,-12 -45,8",
+ "105,-12 145,-8 172,-24 162,-48 120,-50 98,-32",
+ "-180,78 180,78 180,90 -180,90",
+ "-180,-78 180,-78 180,-90 -180,-90"
+];
+
+// Approximate mission reference values (hand-entered from published landing-site data; used for the calibration check, double-check against the papers)
+const MB={
+ "Gale Crater":{ms:"Curiosity Rover (MSL REMS / MOLA)",e:-4.4,T:-53,P:860},
+ "Jezero Crater":{ms:"Perseverance Rover (MEDA / MOLA)",e:-2.6,T:-55,P:765},
+ "Phoenix landing area":{ms:"Phoenix Lander (MET / MOLA)",e:-4.1,T:-76,P:855},
+ "Utopia Planitia":{ms:"Viking 2 Lander / Zhurong Rover",e:-4.5,T:-64,P:890},
+ "Gusev Crater":{ms:"Spirit Rover (MER-A / Mini-TES)",e:-1.9,T:-54,P:720},
+ "Meridiani Planum":{ms:"Opportunity Rover (MER-B / Mini-TES)",e:-1.4,T:-55,P:690},
+ "Cerberus Fossae":{ms:"InSight Lander Regional (TWINS / APSS)",e:-2.5,T:-55,P:760}
+};
+
+const X=o=>(o+180)*2,Y=a=>(90-a)*2;
+const ang=(a,b,c,d)=>Math.acos(Math.min(1,Math.max(-1,Math.sin(a*R)*Math.sin(c*R)+Math.cos(a*R)*Math.cos(c*R)*Math.cos((b-d)*R))))/R;
+const hab=(T,w,f,r)=>100*(.35*Math.exp(-(((T-10)/40)**2))+.25*w+.2*f+.2*r);
+
+function marsAt(la,lo){
+ const d=M.map(m=>({m,d:ang(la,lo,m[1],m[2])})).sort((a,b)=>a.d-b.d).slice(0,3);
+ let s=0,e=0,w=0,f=0,r=0;
+ const nodes=d.map(({m,d:dist})=>{const k=1/(dist*dist+4);s+=k;e+=k*m[3];w+=k*m[5];f+=k*m[6];r+=k*m[7];return{name:m[0],dist,k,elev:m[3],cls:m[4]}});
+ e/=s;w/=s;f/=s;r/=s;const al=Math.abs(la);
+ const wLat=Math.min(1,Math.max(0,(al-30)/30))*.9;
+ w=Math.max(w,wLat);
+ const T=-105+48*Math.pow(Math.cos(la*R),.7)-1.2*e;
+ const S=hab(T,w,f,r);
+ return{name:d[0].m[0],dist:d[0].d,e,cls:al>78?"POL":d[0].m[4],w,f,r,T,Tmin:Math.max(-128,T-45-.25*al),P:610*Math.exp(-e/11.1),S,nodes,kSum:s};
+}
+
+// Interpolate any Earth coordinate from nearest Earth analog sites + latitude climate envelope
+function earthAt(la,lo){
+ const d=E.map(s=>({s,d:ang(la,lo,s[1],s[2])})).sort((a,b)=>a.d-b.d).slice(0,3);
+ if(d[0].d<0.8){
+  const s=d[0].s;
+  return{name:s[0],dist:d[0].d,exact:true,s:[s[0],la,lo,s[3],s[4],s[5],s[6],s[7],s[8],s[9],s[10],s[11]]};
+ }
+ let ks=0,T=0,Tm=0,pr=0,el=0,w=0,f=0,r=0;
+ d.forEach(({s,d:dist})=>{const k=1/(dist*dist+9);ks+=k;T+=k*s[3];Tm+=k*s[4];pr+=k*s[5];el+=k*s[6];w+=k*s[8];f+=k*s[9];r+=k*s[10]});
+ T/=ks;Tm/=ks;pr/=ks;el/=ks;w/=ks;f/=ks;r/=ks;
+ const al=Math.abs(la);
+ const Tlat=27-0.65*al-0.0065*Math.max(0,el);
+ T=0.65*T+0.35*Tlat;
+ Tm=Math.min(T-8,0.65*Tm+0.35*(Tlat-18-0.25*al));
+ const cls=al>74?"POL":d[0].s[7];
+ return{
+  name:`Custom Earth Point (near ${d[0].s[0]}, ${d[0].d.toFixed(1)}° away)`,
+  dist:d[0].d,exact:false,
+  s:[`Custom Earth Point (${la.toFixed(2)}°N, ${lo.toFixed(2)}°E)`,la,lo,Math.round(T),Math.round(Tm),Math.round(pr),Math.round(el),cls,w,f,r,`Interpolated from ${d[0].s[0]} (${d[0].d.toFixed(1)}°), ${d[1].s[0]} (${d[1].d.toFixed(1)}°)`]
+ };
+}
+
+function scoreEarthSite(m,s){
+ const sw=Object.values(W).reduce((a,b)=>a+b,0)||1;
+ const[,, ,T,Tm,pr,el,cl,w,f,r]=s;
+ const Pe=101325*Math.exp(-el/8434);
+ const sim={t:.6*Math.exp(-(((m.T-T)/22)**2))+.4*Math.exp(-(((m.Tmin-Tm)/30)**2)),
+  g:cl==m.cls?1:(AF[cl+m.cls]||AF[m.cls+cl]||.1),a:Math.exp(-pr/80),
+  p:Math.exp(-(((Math.log(m.P)-Math.log(Pe))/3)**2)),
+  s:1-Math.abs(m.S-hab(T,w,f,r))/100};
+ return{s,sim,Pe,habE:hab(T,w,f,r),tot:100*Object.keys(W).reduce((a,k)=>a+W[k]*sim[k],0)/sw};
+}
+
+function rank(m){
+ return E.map(s=>scoreEarthSite(m,s)).sort((a,b)=>b.tot-a.tot);
+}
+
+function draw(el,polys,dots,top,onclk,pFill,pStroke){
+ let h="";
+ for(let o=-180;o<=180;o+=30)h+=`<line x1="${X(o)}" x2="${X(o)}" y1="0" y2="360" stroke="var(--bd)" stroke-width=".5" opacity=".45"/>`;
+ for(let a=-90;a<=90;a+=30)h+=`<line y1="${Y(a)}" y2="${Y(a)}" x1="0" x2="720" stroke="var(--bd)" stroke-width=".5" opacity=".45"/>`;
+ polys.forEach(p=>h+=`<polygon fill="${pFill||"var(--land)"}" stroke="${pStroke||"var(--mu)"}" stroke-width=".6" points="${p.split(" ").map(q=>{const[o,a]=q.split(",");return X(+o)+","+Y(+a)}).join(" ")}"/>`);
+ dots.forEach(d=>h+=`<circle cx="${X(d[2])}" cy="${Y(d[1])}" r="3.2" fill="var(--mu)" opacity=".75"><title>${d[0]} (${d[1]}°N, ${d[2]}°E)</title></circle>`);
+ top.forEach((d,i)=>h+=`<circle cx="${X(d[1])}" cy="${Y(d[0])}" r="${d[3]||8}" fill="${d[4]||"var(--ac)"}" stroke="#fff" stroke-width="1.5"/>`+(d[2]?`<text x="${X(d[1])}" y="${Y(d[0])+3.5}" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${d[2]}</text>`:""));
+ el.innerHTML=h;el.onclick=onclk||null;
+}
+
+function runVerification(la,lo,m,rk){
+ const top1=rk[0];
+ const nStr=m.nodes.map(n=>`<span class="mono">${n.name} (d=${n.dist.toFixed(2)}°, ω=${(100*n.k/m.kSum).toFixed(1)}%, z=${n.elev} km)</span>`).join(" + ");
+ // Calibration check: model vs approximate mission values, computed live for all 7 benchmark sites
+ const TOL_T=10,TOL_P=.15;
+ const bRows=Object.keys(MB).map(n=>{
+  const b=MB[n],r=M.find(x=>x[0]===n),mm=marsAt(r[1],r[2]);
+  const dT=mm.T-b.T,pr=mm.P/b.P-1,ok=Math.abs(dT)<=TOL_T&&Math.abs(pr)<=TOL_P;
+  return{n,b,mm,dT,pr,ok,active:n===m.name};
+ });
+ const mae=bRows.reduce((a,x)=>a+Math.abs(x.dT),0)/bRows.length;
+ const mpe=bRows.reduce((a,x)=>a+Math.abs(x.pr),0)/bRows.length*100;
+ const act=bRows.find(x=>x.active);
+ const actTxt=act?`Nearest region <b>${m.name}</b> (${act.b.ms}): model T = ${act.mm.T.toFixed(1)} °C vs ${act.b.T} °C (Δ ${act.dT>0?"+":""}${act.dT.toFixed(1)} °C), P = ${act.mm.P.toFixed(0)} Pa vs ${act.b.P} Pa (Δ ${(act.pr*100).toFixed(1)}%).`:`No mission reference value is stored for <b>${m.name}</b>, so this site cannot be checked here.`;
+ $("p3a").innerHTML=`
+  <div style="margin-bottom:6px"><b>Active Target:</b> (${la.toFixed(2)}°N, ${lo.toFixed(2)}°E) → Nearest Reference: <b>${m.name}</b> (${m.dist.toFixed(2)}° arc)</div>
+  <div style="margin:4px 0"><b>1. Inverse-distance interpolation (<span class="mono">k_i = 1/(d_i² + 4)</span>):</b><br>${nStr} → elevation <span class="mono">z = ${m.e.toFixed(3)} km</span></div>
+  <div style="margin:4px 0"><b>2. Temperature (<span class="mono">T = -105 + 48·cos(φ)^0.7 - 1.2z</span>):</b><br>Mean <span class="mono">T = ${m.T.toFixed(2)} °C</span> · Night low <span class="mono">T_min = max(-128, T - 45 - 0.25|φ|) = ${m.Tmin.toFixed(2)} °C</span> (−128 °C is the CO₂ frost-point clamp used by the model)</div>
+  <div style="margin:4px 0"><b>3. Pressure (<span class="mono">P_Mars = 610·exp(-z/11.1)</span>, <span class="mono">P_Earth = 101325·exp(-z/8434)</span>):</b><br>Mars <span class="mono">P = ${m.P.toFixed(1)} Pa</span> · Top analog (${top1.s[0]} @ ${top1.s[6]} m) <span class="mono">P_Earth = ${top1.Pe.toFixed(0)} Pa</span> · log-pressure similarity <span class="mono">${(top1.sim.p*100).toFixed(1)}%</span></div>
+  <div style="margin:6px 0 4px"><b>4. Calibration check vs. approximate mission values:</b><br>${actTxt}</div>
+  <div class="sc"><table style="min-width:560px"><tr><th>Site</th><th>Mission (reference)</th><th>Ref T / P</th><th>Model T / P</th><th>ΔT</th><th>ΔP</th><th>Within tolerance</th></tr>`+
+  bRows.map(x=>`<tr${x.active?' style="font-weight:700"':''}><td>${x.n}</td><td>${x.b.ms}</td><td>${x.b.T} °C / ${x.b.P} Pa</td><td>${x.mm.T.toFixed(1)} °C / ${x.mm.P.toFixed(0)} Pa</td><td>${x.dT>0?"+":""}${x.dT.toFixed(1)} °C</td><td>${x.pr>0?"+":""}${(x.pr*100).toFixed(1)}%</td><td><span class="badge ${x.ok?"":"bad"}">${x.ok?"YES":"NO"}</span></td></tr>`).join("")+
+  `</table></div>
+  <div class="mu" style="margin-top:6px">Mean absolute error: ${mae.toFixed(1)} °C and ${mpe.toFixed(1)}% pressure over ${bRows.length} sites (tolerance ±${TOL_T} °C and ±${TOL_P*100}%). The reference values are approximate and were used to calibrate the model, so this shows how well it fits those points, not how well it predicts other places.</div>
+ `;
+
+ const allMFinite=M.every(r=>{const x=marsAt(r[1],r[2]);return isFinite(x.T)&&isFinite(x.P)&&x.P>0&&x.Tmin>=-128});
+ const allEFinite=E.every(s=>isFinite(s[1])&&isFinite(s[2])&&isFinite(s[3])&&isFinite(s[5])&&isFinite(s[6]));
+ const weightUnity=Math.abs(m.nodes.reduce((a,n)=>a+n.k/m.kSum,0)-1)<1e-12;
+ const symCheck=Object.keys(NM).every(a=>Object.keys(NM).every(b=>(a==b?1:(AF[a+b]||AF[b+a]||.1))===(b==a?1:(AF[b+a]||AF[a+b]||.1))));
+ const simsOk=rk.every(x=>x.tot>=0&&x.tot<=100&&Object.values(x.sim).every(v=>isFinite(v)&&v>=0&&v<=1));
+ const pOk=m.P>=30&&m.P<=1300;
+ const checks=[
+  ["Check 1 · Distance identity",ang(la,lo,la,lo)<1e-9,`<span class="mono">d(φ,λ,φ,λ) = ${ang(la,lo,la,lo).toFixed(6)}°</span> (spherical law of cosines)`],
+  ["Check 2 · Weights sum to 1",weightUnity,`<span class="mono">∑ ω_i = ${(m.nodes.reduce((a,n)=>a+n.k/m.kSum,0)*100).toFixed(4)}%</span> across the 3 nearest Mars regions`],
+  ["Check 3 · Night-low clamp",m.Tmin>=-128,`<span class="mono">T_min = ${m.Tmin.toFixed(1)} °C</span>; the model clamps this at −128 °C, so this only confirms the clamp works`],
+  ["Check 4 · Pressure in plausible range",pOk,`<span class="mono">P(${m.e.toFixed(1)} km) = ${m.P.toFixed(1)} Pa</span>, expected roughly 30 to 1300 Pa for Martian terrain`],
+  ["Check 5 · Terrain table symmetry",symCheck,`Terrain affinity lookup gives the same value for (A,B) and (B,A) across all 8×8 pairs`],
+  ["Check 6 · Mars regions finite",allMFinite,`${M.length} reference regions evaluated with no NaN or Infinity`],
+  ["Check 7 · Scores within bounds",simsOk&&allEFinite,`All Earth-site similarity terms are in [0, 1] and totals in [0, 100] for this query; ${E.length} Earth entries have finite inputs`],
+  ["Check 8 · Ranking sorted",rk.every((x,i)=>i===0||rk[i-1].tot>=x.tot),`Results sorted in descending order (<span class="mono">${rk[0].tot.toFixed(1)}% ≥ ${rk[4].tot.toFixed(1)}%</span> for ranks 1 to 5)`]
+ ];
+ $("p3b").innerHTML=checks.map(a=>`<div class="ax-card"><b><span>${a[0]}</span><span class="badge ${a[1]?"":"bad"}">${a[1]?"PASS":"FAIL"}</span></b><div class="mu">${a[2]}</div></div>`).join("");
+
+ const bLat1=(top1.s[1]-1).toFixed(2),bLon1=(top1.s[2]-1).toFixed(2),bLat2=(top1.s[1]+1).toFixed(2),bLon2=(top1.s[2]+1).toFixed(2);
+ const rows=[
+  ["NASA Earthdata Search","https://search.earthdata.nasa.gov/","Earth surface temperature and elevation (e.g. MODIS, ASTER GDEM)",`#1 ${top1.s[0]}: T_mean = ${top1.s[3]} °C, elev = ${top1.s[6]} m`,"Earth temperature and elevation fields"],
+  ["NASA Worldview","https://worldview.earthdata.nasa.gov/index.html","Satellite imagery: snow/ice cover, albedo, visual check of a site",`View box [${bLon1}, ${bLat1}, ${bLon2}, ${bLat2}] · precip = ${top1.s[5]} mm/yr`,"Aridity term, exp(−precip/80)"],
+  ["NASA Planetary Data System (PDS)","https://pds.nasa.gov/","Mars MOLA topography, TES and THEMIS data",`${m.name}: z = ${m.e.toFixed(2)} km, P = ${m.P.toFixed(0)} Pa, class ${m.cls}`,"Mars elevation, terrain class, pressure"],
+  ["CSA RADARSAT-1 archive","https://donnees-data.asc-csa.gc.ca/en/dataset/radarsat1","C-band radar imagery for surface roughness on Earth",`Mars flatness ${(m.f*100).toFixed(0)}% vs ${top1.s[0]} ${(top1.s[9]*100).toFixed(0)}%`,"Flatness values (hand-assigned, 0 to 1)"],
+  ["Copernicus Data Space (Sentinel)","https://dataspace.copernicus.eu/","Sentinel-1 radar and Sentinel-2 optical imagery of Earth sites",`Mars resource index ${(m.r*100).toFixed(0)}% · site note: ${top1.s[11]}`,"Site descriptions and resource index (hand-assigned)"],
+  ["ESA Open Science Data","https://opensciencedata.esa.int/","ESA mission and field-campaign data, including Mars Express and ExoMars",`Suitability: Mars ${m.S.toFixed(1)}/100 vs Earth ${top1.habE.toFixed(1)}/100`,"Background for analog sites and Mars context"],
+  ["JAXA G-Portal","https://gportal.jaxa.jp/gpr/index/index","Japanese Earth-observation data (e.g. ALOS DEM and PALSAR-2 radar)",`Top 3 analogs: ${rk.slice(0,3).map(x=>x.s[0]).join(", ")}`,"Optional Earth terrain and elevation cross-check"]
+ ];
+ $("p3c").innerHTML=`<table><tr><th>#</th><th>Source (link)</th><th>Typical use</th><th>Model value for this query</th><th>Related model input</th></tr>`+
+  rows.map((r,i)=>`<tr><td><b>${i+1}</b></td><td><a class="ext" href="${r[1]}" target="_blank" rel="noopener">${r[0]} ↗</a></td><td>${r[2]}</td><td><span class="mono">${r[3]}</span></td><td>${r[4]}</td></tr>`).join("")+`</table><p class="mu" style="font-size:12px">These archives are reference sources for checking inputs yourself. The model does not query them automatically.</p>`;
+
+ $("vban").innerHTML=`<div><b>Screening tool</b> · approximate model built from literature values · ${bRows.filter(x=>x.ok).length}/${bRows.length} calibration sites within tolerance · <a class="ext" href="#lim">see limitations below</a></div><div class="mu" style="font-size:12px">Active Query: <b>${m.name}</b> (${la.toFixed(1)}°N, ${lo.toFixed(1)}°E) → Top Match: <b>${top1.s[0]} (${top1.tot.toFixed(0)}%)</b></div>`;
+}
+
+// ===== Shared 3D Planetary Globe Factory (Mars Red Globe + Earth Blue Globe) =====
+function createGlobe(cfg){
+ const box=$(cfg.boxId),cv=document.createElement("canvas"),ctx=cv.getContext("2d");box.prepend(cv);
+ let W=0,H=0,CX=0,CY=0,Rr=1,u=1,sp0=0,cp0=1,l0=0,pen=false;
+ const st={la:cfg.initLa,lo:cfg.initLo,zm:1};
+ let zt=1,sel=null,tops=[],key="",fl=null,drag=null,foc=null,idle=0,vis=true,last=performance.now();
+ const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+ const fc=(a,o)=>Math.abs(a).toFixed(2)+"°"+(a<0?"S":"N")+" "+Math.abs(o).toFixed(2)+"°"+(o<0?"W":"E");
+ const stars=Array.from({length:80},(_,i)=>{const a=Math.sin(i*91.7+cfg.seed)*43758.5453,b=Math.sin(i*12.9898+cfg.seed)*4375.5;return[a-Math.floor(a),b-Math.floor(b),.5+(i*7%10)/10,.25+(i*13%7)/10]});
+ const poly=cfg.polys.map(s=>s.split(" ").map(q=>q.split(",").map(Number)));
+ const inside=(lo,la,pg)=>{let c=false;for(let i=0,j=pg.length-1;i<pg.length;j=i++){const[a,b]=pg[i],[d,e]=pg[j];if((b>la)!=(e>la)&&lo<(d-a)*(la-b)/(e-b)+a)c=!c}return c};
+ const dots=[];
+ for(let la=-88;la<=88;la+=2.6){const n=Math.max(1,Math.round(360*Math.cos(la*R)/2.6));for(let k=0;k<n;k++){const lo=-180+(k+.5)*360/n;if(poly.some(pg=>inside(lo,la,pg)))dots.push([la*R,lo*R,Math.sin(la*R),Math.cos(la*R),Math.abs(la)>76])}}
+ const edges=poly.map(pg=>{const o=[];for(let i=0;i<pg.length;i++){const a=pg[i],b=pg[(i+1)%pg.length],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/3));for(let k=0;k<n;k++)o.push([(a[1]+(b[1]-a[1])*k/n)*R,(a[0]+(b[0]-a[0])*k/n)*R])}o.push(o[0]);return o});
+
+ function pr(la,lo,h){const l=lo-l0,cp=Math.cos(la),sl=Math.sin(la),cl=Math.cos(l),k=1+(h||0);
+  return[CX+cp*Math.sin(l)*k*Rr,CY-(cp0*sl-sp0*cp*cl)*k*Rr,sp0*sl+cp0*cp*cl]}
+ const mv=(la,lo)=>{const q=pr(la,lo);if(q[2]>0){pen?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]);pen=true}else pen=false};
+ function dest(la,lo,a,b){const s=Math.sin(la),c=Math.cos(la),sa=Math.sin(a),ca=Math.cos(a),p=Math.asin(s*ca+c*sa*Math.cos(b));return[p,lo+Math.atan2(Math.sin(b)*sa*c,ca-s*Math.sin(p))]}
+ function ring(la,lo,a,fill){pen=false;ctx.beginPath();for(let k=0;k<=48;k++){const d=dest(la,lo,a,k/48*6.2832);mv(d[0],d[1])}fill?ctx.fill():ctx.stroke()}
+ function pulses(la,lo,rgb,now){const t=reduce?.3:now/2600;for(let k=0;k<3;k++){const p=(t+k/3)%1;ctx.strokeStyle=`rgba(${rgb},${(.85*(1-p)).toFixed(3)})`;ctx.lineWidth=1.6;ring(la,lo,(.4+p*10)*R,false)}ctx.fillStyle=`rgba(${rgb},.28)`;ring(la,lo,1.6*R,true)}
+ function beam(la,lo,rgb,now){const a=pr(la,lo,0);if(a[2]<=.05)return null;
+  const b=pr(la,lo,.2*(reduce?1:.94+.06*Math.sin(now/450)));
+  ctx.lineCap="round";
+  for(const[w,col]of[[3.4*u,rgb],[1.2*u,"255,255,255"]]){const g=ctx.createLinearGradient(a[0],a[1],b[0],b[1]);g.addColorStop(0,`rgba(${col},.95)`);g.addColorStop(1,`rgba(${col},.04)`);ctx.strokeStyle=g;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()}
+  ctx.shadowColor=`rgba(${rgb},1)`;ctx.shadowBlur=16;ctx.fillStyle="#fff";
+  for(const q of[a,b]){ctx.beginPath();ctx.arc(q[0],q[1],(q===a?2.6:3.6)*u,0,7);ctx.fill()}
+  ctx.shadowBlur=0;return b}
+ function card(q,t1,t2,col){
+  ctx.font="600 12.5px system-ui,sans-serif";const w1=ctx.measureText(t1).width;ctx.font="11px system-ui,sans-serif";
+  const w=Math.max(w1,ctx.measureText(t2).width)+22,h=40;let x=q[0]+18,y=q[1]-h-8;if(x+w>W-6)x=q[0]-18-w;if(y<6)y=6;
+  ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(q[0],q[1]);ctx.lineTo(x<q[0]?x+w:x,y+h/2);ctx.stroke();
+  ctx.fillStyle=cfg.cardBg;ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,10):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke();
+  ctx.fillStyle="#fff7f5";ctx.font="600 12.5px system-ui,sans-serif";ctx.fillText(t1,x+11,y+17);
+  ctx.fillStyle=cfg.cardSub;ctx.font="11px system-ui,sans-serif";ctx.fillText(t2,x+11,y+32)}
+
+ const OR=cfg.orbitTilt,orb=t=>[CX+Rr*1.4*Math.cos(t)*Math.cos(OR)-Rr*.34*Math.sin(t)*Math.sin(OR),CY+Rr*1.4*Math.cos(t)*Math.sin(OR)+Rr*.34*Math.sin(t)*Math.cos(OR)];
+ function orbit(a,b,now,front){
+  ctx.strokeStyle=front?cfg.orbFront:cfg.orbBack;ctx.lineWidth=1;ctx.beginPath();
+  for(let t=a,f=1;t<=b+.001;t+=.06,f=0){const q=orb(t);f?ctx.moveTo(q[0],q[1]):ctx.lineTo(q[0],q[1])}ctx.stroke();
+  const ts=(reduce?1:now/4200+cfg.seed)%6.2832;if((Math.sin(ts)>0)===front){const q=orb(ts);ctx.shadowColor=cfg.orbDotGlow;ctx.shadowBlur=12;ctx.fillStyle="#fff3d6";ctx.beginPath();ctx.arc(q[0],q[1],2.4*u,0,7);ctx.fill();ctx.shadowBlur=0}}
+
+ function frame(now){
+  requestAnimationFrame(frame);if(!vis||!W)return;
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(fl){const p=Math.min(1,(now-fl.t0)/fl.d),e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+   st.la=fl.la0+(fl.la1-fl.la0)*e;st.lo=fl.lo0+(fl.lo1-fl.lo0)*e;st.zm=fl.z0+(zt-fl.z0)*e-(reduce?0:.1*Math.sin(Math.PI*p));if(p>=1){fl=null;st.zm=zt}}
+  else{st.zm+=(zt-st.zm)*Math.min(1,dt*4);if(!drag&&!sel&&!reduce&&now-idle>3000)st.lo+=dt*5}
+  st.lo=((st.lo+540)%360)-180;
+  CX=W/2;CY=H/2;Rr=Math.min(W,H)*.36*st.zm;u=Math.max(.8,Math.min(1.6,Rr/150));
+  sp0=Math.sin(st.la*R);cp0=Math.cos(st.la*R);l0=st.lo*R;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=cfg.starCol;for(const s of stars){ctx.globalAlpha=s[3]*(reduce?1:.65+.35*Math.sin(now/900+s[0]*20));ctx.fillRect(s[0]*W,s[1]*H,s[2]*1.2,s[2]*1.2)}ctx.globalAlpha=1;
+  orbit(Math.PI,2*Math.PI,now,false);
+  let g=ctx.createRadialGradient(CX,CY,Rr*.96,CX,CY,Rr*1.34);g.addColorStop(0,cfg.atmo0);g.addColorStop(.35,cfg.atmo1);g.addColorStop(1,cfg.atmo2);
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(CX,CY,Rr*1.34,0,7);ctx.fill();
+  g=ctx.createRadialGradient(CX-Rr*.38,CY-Rr*.42,Rr*.1,CX,CY,Rr);g.addColorStop(0,cfg.body0);g.addColorStop(.55,cfg.body1);g.addColorStop(1,cfg.body2);
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(CX,CY,Rr,0,7);ctx.fill();
+  ctx.strokeStyle=cfg.gridCol;ctx.lineWidth=1;
+  for(let a=-60;a<=60;a+=30){pen=false;ctx.beginPath();for(let o=-180;o<=180;o+=4)mv(a*R,o*R);ctx.stroke()}
+  for(let o=-180;o<180;o+=30){pen=false;ctx.beginPath();for(let a=-90;a<=90;a+=4)mv(a*R,o*R);ctx.stroke()}
+  ctx.strokeStyle=cfg.edgeCol;ctx.lineWidth=1;
+  for(const e of edges){pen=false;ctx.beginPath();for(const q of e)mv(q[0],q[1]);ctx.stroke()}
+  for(const d of dots){const l=d[1]-l0,cl=Math.cos(l),z=sp0*d[2]+cp0*d[3]*cl;if(z<=.02)continue;
+   ctx.fillStyle=d[4]&&cfg.polarCol?cfg.polarCol:cfg.dotCol;
+   ctx.globalAlpha=.18+.72*z;ctx.beginPath();ctx.arc(CX+d[3]*Math.sin(l)*Rr,CY-(cp0*d[2]-sp0*d[3]*cl)*Rr,Rr*.0042*(.6+.7*z)+.4,0,7);ctx.fill()}
+  ctx.globalAlpha=1;
+  g=ctx.createRadialGradient(CX,CY,Rr*.55,CX,CY,Rr);g.addColorStop(0,cfg.shade0);g.addColorStop(1,cfg.shade1);ctx.fillStyle=g;ctx.beginPath();ctx.arc(CX,CY,Rr,0,7);ctx.fill();
+  g=ctx.createLinearGradient(CX-Rr,CY-Rr,CX+Rr,CY+Rr);g.addColorStop(0,cfg.rim0);g.addColorStop(.5,cfg.rim1);g.addColorStop(1,cfg.rim2);
+  ctx.strokeStyle=g;ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(CX,CY,Rr,0,7);ctx.stroke();
+  ctx.fillStyle=cfg.siteDotCol;
+  for(const s of cfg.sites){const q=pr(s[1]*R,s[2]*R);if(q[2]>.05){ctx.beginPath();ctx.arc(q[0],q[1],1.8*u,0,7);ctx.fill()}}
+  for(const t of tops){const q=pr(t.la*R,t.lo*R);if(q[2]<=.05)continue;
+   ctx.strokeStyle=cfg.pinRing;ctx.lineWidth=1;ctx.beginPath();ctx.arc(q[0],q[1],11*u,0,7);ctx.stroke();
+   ctx.fillStyle=cfg.pinFill;ctx.strokeStyle="rgba(255,255,255,.92)";ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(q[0],q[1],7*u,0,7);ctx.fill();ctx.stroke();
+   ctx.fillStyle=cfg.pinTxt;ctx.font=`700 ${Math.round(9*u)}px system-ui,sans-serif`;ctx.textAlign="center";ctx.fillText(t.n,q[0],q[1]+3.3*u);ctx.textAlign="left"}
+  if(foc&&now<foc.until){pulses(foc.la*R,foc.lo*R,cfg.focRgb,now);const b=beam(foc.la*R,foc.lo*R,cfg.focRgb,now);if(b)card(b,foc.n+" · "+foc.name.slice(0,30),fc(foc.la,foc.lo)+(foc.sub?" · "+foc.sub:""),`rgba(${cfg.focRgb},.7)`)}
+  if(sel){const la=sel.la*R,lo=sel.lo*R;pulses(la,lo,cfg.selRgb,now);const b=beam(la,lo,cfg.selRgb,now);
+   if(b&&!(foc&&now<foc.until))card(b,"★ "+sel.name.slice(0,30),fc(sel.la,sel.lo)+" · "+sel.sub,`rgba(${cfg.selRgb},.75)`)}
+  orbit(0,Math.PI,now,true);
+ }
+ function fly(la,lo,z){zt=z;let d=lo-st.lo;d=((d+540)%360)-180;
+  fl={t0:performance.now(),d:reduce?1:Math.min(2400,800+Math.hypot(d,la-st.la)*14),la0:st.la,la1:Math.max(-75,Math.min(75,la)),lo0:st.lo,lo1:st.lo+d,z0:st.zm}}
+ function resize(){W=box.clientWidth;H=box.clientHeight;const r=Math.min(2,devicePixelRatio||1);cv.width=W*r;cv.height=H*r;ctx.setTransform(r,0,0,r,0,0)}
+ new ResizeObserver(resize).observe(box);resize();
+ new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(box);
+ cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,la:st.la,lo:st.lo,m:0};fl=null;idle=performance.now()});
+ cv.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.m=Math.max(drag.m,Math.hypot(dx,dy));
+  if(drag.m>5){st.lo=drag.lo-dx/Rr/R;st.la=Math.max(-85,Math.min(85,drag.la+dy/Rr/R))}idle=performance.now()});
+ cv.addEventListener("pointercancel",()=>drag=null);
+ cv.addEventListener("pointerup",e=>{const d=drag;drag=null;if(!d||d.m>5)return;
+  const b=cv.getBoundingClientRect(),x=(e.clientX-b.left-CX)/Rr,y=-(e.clientY-b.top-CY)/Rr,rho=Math.hypot(x,y);if(rho>1)return;
+  const c=Math.asin(rho),s0=Math.sin(st.la*R),c0=Math.cos(st.la*R);let la=st.la,lo=st.lo;
+  if(rho>1e-9){la=Math.asin(Math.cos(c)*s0+y*Math.sin(c)*c0/rho)/R;lo=st.lo+Math.atan2(x*Math.sin(c),rho*c0*Math.cos(c)-y*s0*Math.sin(c))/R}
+  lo=((lo+540)%360)-180;cfg.onPick(la,lo)});
+ const cb=$(cfg.ctrlId);
+ cb.onclick=e=>{const b=e.target.closest("button");if(!b)return;const t=b.dataset.t;idle=performance.now();
+  if(t=="s"&&sel){foc=null;fly(sel.la,sel.lo,1.14)}else if(tops[t]){const a=tops[t];fly(a.la,a.lo,1.14);foc={...a,until:performance.now()+7000};if(cfg.onBtnPick)cfg.onBtnPick(a)}};
+ requestAnimationFrame(frame);
+ return{update(s,t){
+  tops=t;sel=s;
+  const k=s?s.la.toFixed(2)+","+s.lo.toFixed(2):"";if(k!==key){key=k;foc=null;if(s)fly(s.la,s.lo,1.14);else zt=1}
+  cb.innerHTML=(s?`<button class="gh" data-t="s">★ ${cfg.selBtnLabel}</button>`:"")+tops.map((x,i)=>`<button class="gh" data-t="${i}">${x.n} · ${x.name}</button>`).join("")}}
+}
+
+let gm,gmk=[],useCustomEarth=true;
+
+// Instantiate 3D Red-Themed Mars Globe
+const MGL=createGlobe({
+ boxId:"mgl",ctrlId:"mglc",initLa:-5.4,initLo:137.8,seed:2.1,
+ polys:MP,sites:M,orbitTilt:.26,
+ starCol:"#ffd8c4",
+ atmo0:"rgba(255,94,43,.58)",atmo1:"rgba(210,55,20,.22)",atmo2:"rgba(120,20,5,0)",
+ body0:"#b83c1a",body1:"#6e1d0b",body2:"#240703",
+ gridCol:"rgba(255,160,120,.16)",edgeCol:"rgba(255,195,145,.42)",
+ dotCol:"#f59e6c",polarCol:"#fff0e6",
+ shade0:"rgba(28,4,2,0)",shade1:"rgba(20,3,2,.68)",
+ rim0:"rgba(255,185,140,.9)",rim1:"rgba(235,95,55,.32)",rim2:"rgba(255,215,150,.55)",
+ siteDotCol:"rgba(255,225,195,.65)",
+ pinRing:"rgba(255,210,63,.45)",pinFill:"#d9381e",pinTxt:"#fff",
+ focRgb:"255,140,66",selRgb:"255,210,63",
+ cardBg:"rgba(32,8,5,.9)",cardSub:"#f0b59e",
+ orbFront:"rgba(255,160,110,.45)",orbBack:"rgba(255,160,110,.15)",orbDotGlow:"#ff9e66",
+ selBtnLabel:"Target Mars site",
+ onPick:(la,lo)=>{$("la").value=la.toFixed(2);$("lo").value=lo.toFixed(2);linkEarth();go()},
+ onBtnPick:(a)=>{$("la").value=a.la;$("lo").value=a.lo;linkEarth();go()}
+});
+
+// Instantiate 3D Blue-Themed Earth Globe
+const GL=createGlobe({
+ boxId:"gl",ctrlId:"glc",initLa:15,initLo:-40,seed:0,
+ polys:P,sites:E,orbitTilt:-.3,
+ starCol:"#cfe0ff",
+ atmo0:"rgba(90,170,255,.55)",atmo1:"rgba(60,120,255,.18)",atmo2:"rgba(40,80,255,0)",
+ body0:"#1f5088",body1:"#0c2347",body2:"#040b1f",
+ gridCol:"rgba(130,175,255,.13)",edgeCol:"rgba(236,210,160,.4)",
+ dotCol:"#ecd7ae",polarCol:"#e8f4ff",
+ shade0:"rgba(2,6,20,0)",shade1:"rgba(2,6,20,.62)",
+ rim0:"rgba(170,215,255,.85)",rim1:"rgba(110,160,255,.25)",rim2:"rgba(236,206,150,.5)",
+ siteDotCol:"rgba(255,255,255,.55)",
+ pinRing:"rgba(255,106,61,.4)",pinFill:"#ff6a3d",pinTxt:"#fff",
+ focRgb:"255,106,61",selRgb:"94,231,255",
+ cardBg:"rgba(6,12,30,.88)",cardSub:"#9fb4dc",
+ orbFront:"rgba(236,206,150,.4)",orbBack:"rgba(236,206,150,.14)",orbDotGlow:"#f5d9a0",
+ selBtnLabel:"Selected point",
+ onPick:(la,lo)=>{$("ela").value=la.toFixed(2);$("elo").value=lo.toFixed(2);useCustomEarth=true;linkMars();go()}
+});
+
+// Link: picking an Earth point also moves Mars to its best-matching Martian site
+function linkMars(){
+ if(!$("lnk").checked)return;
+ let ela=+$("ela").value,elo=+$("elo").value;
+ if(!isFinite(ela)||!isFinite(elo)||Math.abs(ela)>90)return;
+ elo=((elo+180)%360+360)%360-180;
+ const ep=earthAt(ela,elo);
+ let bi=0,bs=-1;
+ M.forEach((mr,i)=>{const t=scoreEarthSite(marsAt(mr[1],mr[2]),ep.s).tot;if(t>bs){bs=t;bi=i}});
+ $("la").value=M[bi][1];$("lo").value=M[bi][2];$("pre").value=bi;
+ const t=$("toast");t.onclick=()=>{$("mgl").scrollIntoView({behavior:"smooth",block:"center"});t.style.display="none"};t.innerHTML=`🔴 Mars analog: <b>${M[bi][0]}</b> · tap to view`;t.style.display="block";clearTimeout(window._tt);window._tt=setTimeout(()=>t.style.display="none",6000);
+}
+// Link: picking a Mars point also selects its best-matching Earth site
+function linkEarth(){
+ if(!$("lnk").checked)return;
+ let la=+$("la").value,lo=+$("lo").value;
+ if(!isFinite(la)||!isFinite(lo)||Math.abs(la)>90)return;
+ lo=((lo+180)%360+360)%360-180;
+ const top=rank(marsAt(la,lo))[0].s;
+ $("ela").value=top[1];$("elo").value=top[2];useCustomEarth=true;
+ const i=E.findIndex(x=>x[0]===top[0]);if(i>=0)$("epre").value=i;
+ const t=$("toast");t.onclick=()=>{$("gl").scrollIntoView({behavior:"smooth",block:"center"});t.style.display="none"};
+ t.innerHTML=`🔵 Earth analog: <b>${top[0]}</b> · tap to view`;t.style.display="block";clearTimeout(window._tt);window._tt=setTimeout(()=>t.style.display="none",6000);
+}
+window.setMarsCoord=(mla,mlo)=>{
+ $("la").value=mla;$("lo").value=mlo;go();
+};
+
+function go(){
+ let la=+$("la").value,lo=+$("lo").value;
+ if(!isFinite(la)||!isFinite(lo)||Math.abs(la)>90){$("ms").innerHTML="<p>Enter a latitude from −90 to 90 and a longitude from −180 to 360.</p>";return}
+ lo=((lo+180)%360+360)%360-180;
+ const m=marsAt(la,lo);
+ const c=(l,v)=>`<div><small>${l}</small><b>${v}</b></div>`;
+ $("ms").innerHTML=c("Nearest region",m.name+" ("+m.dist.toFixed(0)+"° away)")+c("Terrain",NM[m.cls])+c("Elevation",m.e.toFixed(1)+" km")+c("Mean surface temp",m.T.toFixed(0)+" °C")+c("Typical night low",m.Tmin.toFixed(0)+" °C")+c("Surface pressure",m.P.toFixed(0)+" Pa")+c("Water-ice access",(m.w*100).toFixed(0)+"%")+c("Living suitability",m.S.toFixed(0)+" / 100");
+
+ const mNear3=m.nodes.map((n,i)=>{const reg=M.find(r=>r[0]===n.name);return{la:reg[1],lo:reg[2],n:i+1,name:n.name,sub:`${n.elev} km · ${n.dist.toFixed(1)}° away`}});
+ draw($("mm"),MP,M,[...mNear3.map(x=>[x.la,x.lo,x.n,7,"#d9381e"]),[la,lo,"★",8.5,"#ffd23f"]],ev=>{
+  const b=$("mm").getBoundingClientRect();
+  $("la").value=(90-(ev.clientY-b.top)/b.height*180).toFixed(2);
+  $("lo").value=((ev.clientX-b.left)/b.width*360-180).toFixed(2);
+  linkEarth();
+  go();
+ },"#4a1c11","#9e4731");
+
+ MGL.update({la,lo,name:m.dist<1?m.name:`Mars (${m.name})`,sub:`${m.T.toFixed(0)}°C · ${m.P.toFixed(0)} Pa`},mNear3);
+
+ const rk=rank(m),top=rk.slice(0,5);
+ const eMarkers=top.map((r,i)=>[r.s[1],r.s[2],i+1,8,"var(--ac)"]);
+
+ let gSel=null;
+ // Handle Selected / Clicked Earth Coordinate
+ let ela=+$("ela").value,elo=+$("elo").value;
+ if(useCustomEarth&&isFinite(ela)&&isFinite(elo)&&Math.abs(ela)<=90){
+  elo=((elo+180)%360+360)%360-180;
+  eMarkers.push([ela,elo,"★",9,"#00b4d8"]);
+  const ep=earthAt(ela,elo);
+  const sc=scoreEarthSite(m,ep.s);
+  gSel={la:ela,lo:elo,name:ep.exact?ep.name:"Selected location",sub:sc.tot.toFixed(0)+"% match"};
+  // Also find best matching Mars reference region for this Earth coordinate (reverse lookup)
+  const bestMars=M.map(mr=>{const mm=marsAt(mr[1],mr[2]);return{mr,sc:scoreEarthSite(mm,ep.s).tot}}).sort((a,b)=>b.sc-a.sc)[0];
+  const wvUrl=`https://worldview.earthdata.nasa.gov/?v=${(elo-2).toFixed(2)},${(ela-2).toFixed(2)},${(elo+2).toFixed(2)},${(ela+2).toFixed(2)}`;
+  const edUrl=`https://search.earthdata.nasa.gov/search?lat=${ela}&long=${elo}&zoom=7`;
+  $("esel").innerHTML=`<div class="res esel-card">
+   <h4><div>★ Selected Earth Coordinate: ${ep.name} (${ela.toFixed(2)}°N, ${elo.toFixed(2)}°E)</div><span>${sc.tot.toFixed(0)}% match vs. ${m.name}</span></h4>
+   <div class="mu" style="font-size:12px">${NM[ep.s[7]]} · ${ep.s[3]} °C mean (low ${ep.s[4]} °C) · ${ep.s[5]} mm/yr · ${ep.s[6]} m — ${ep.s[11]}</div>
+   ${Object.keys(FN).map(k=>`<div class="k"><span>${FN[k]}</span><i style="--v:${(sc.sim[k]*100).toFixed(0)}%"></i><b>${(sc.sim[k]*100).toFixed(0)}%</b></div>`).join("")}
+   <div class="mlink">🔴 Analogous place on Mars: <b>${bestMars.mr[0]}</b> (${bestMars.mr[1]}°N, ${bestMars.mr[2]}°E) · ${bestMars.sc.toFixed(0)}% match — <a class="ext" onclick="document.getElementById('mgl').scrollIntoView({behavior:'smooth',block:'center'})">Show on Mars ↑</a></div>
+   <div style="margin-top:6px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px">
+    <div>
+     <a href="https://www.google.com/maps/search/?api=1&query=${ela},${elo}" target="_blank" rel="noopener">Open in Google Maps ↗</a>
+     <a href="${wvUrl}" target="_blank" rel="noopener">Verify in NASA Worldview ↗</a>
+     <a href="${edUrl}" target="_blank" rel="noopener">Verify in NASA Earthdata ↗</a>
+    </div>
+    <button class="sec" style="padding:5px 10px;font-size:12px" onclick="setMarsCoord(${bestMars.mr[1]},${bestMars.mr[2]})">Reverse Match → ${bestMars.mr[0]} (${bestMars.sc.toFixed(0)}%)</button>
+   </div>
+  </div>`;
+ }else{
+  $("esel").innerHTML="";
+ }
+
+ // Draw Earth map with click handler so user can pick any Earth coordinate directly on the diagram
+ draw($("em"),P,E,eMarkers,ev=>{
+  const b=$("em").getBoundingClientRect();
+  $("ela").value=(90-(ev.clientY-b.top)/b.height*180).toFixed(2);
+  $("elo").value=((ev.clientX-b.left)/b.width*360-180).toFixed(2);
+  useCustomEarth=true;
+  linkMars();
+  go();
+ });
+
+ GL.update(gSel,top.map((r,i)=>({la:r.s[1],lo:r.s[2],n:i+1,name:r.s[0],sub:r.tot.toFixed(0)+"% match"})));
+ $("rs").innerHTML=top.map((r,i)=>{
+  const lat=r.s[1],lon=r.s[2];
+  const wvUrl=`https://worldview.earthdata.nasa.gov/?v=${(lon-2).toFixed(2)},${(lat-2).toFixed(2)},${(lon+2).toFixed(2)},${(lat+2).toFixed(2)}`;
+  const edUrl=`https://search.earthdata.nasa.gov/search?lat=${lat}&long=${lon}&zoom=7`;
+  return `<div class="res"><h4><div>${i+1}. ${r.s[0]}</div><span>${r.tot.toFixed(0)}% match</span></h4><div class="mu" style="font-size:12px">${NM[r.s[7]]} · ${r.s[3]} °C mean · ${r.s[5]} mm/yr · ${r.s[6]} m — ${r.s[11]}</div>`+Object.keys(FN).map(k=>`<div class="k"><span>${FN[k]}</span><i style="--v:${(r.sim[k]*100).toFixed(0)}%"></i><b>${(r.sim[k]*100).toFixed(0)}%</b></div>`).join("")+`<div style="margin-top:6px"><a href="https://www.google.com/maps/search/?api=1&query=${lat},${lon}" target="_blank" rel="noopener">Open in Google Maps ↗</a><a href="${wvUrl}" target="_blank" rel="noopener">Verify in NASA Worldview ↗</a><a href="${edUrl}" target="_blank" rel="noopener">Verify in NASA Earthdata ↗</a></div></div>`;
+ }).join("");
+ if(gm){gmk.forEach(k=>k.setMap(null));gmk=top.map((r,i)=>new google.maps.Marker({map:gm,position:{lat:r.s[1],lng:r.s[2]},label:""+(i+1),title:r.s[0]}))}
+ runVerification(la,lo,m,rk);
+}
+
+$("pre").innerHTML=M.map((m,i)=>`<option value="${i}">${m[0]}</option>`).join("");
+$("pre").onchange=()=>{const m=M[$("pre").value];$("la").value=m[1];$("lo").value=m[2];linkEarth();go()};
+$("go").onclick=()=>{linkEarth();go()};
+
+$("epre").innerHTML=E.map((s,i)=>`<option value="${i}">${s[0]}</option>`).join("");
+$("epre").onchange=()=>{const s=E[$("epre").value];$("ela").value=s[1];$("elo").value=s[2];useCustomEarth=true;linkMars();go()};
+$("ego").onclick=()=>{useCustomEarth=true;linkMars();go()};
+$("eclr").onclick=()=>{useCustomEarth=false;$("esel").innerHTML="";go()};
+
+$("sl").innerHTML=Object.keys(FN).map(k=>`<label>${FN[k]}<input type="range" min="0" max="1" step=".05" value="${W[k]}" data-k="${k}"></label>`).join("");
+$("sl").oninput=e=>{W[e.target.dataset.k]=+e.target.value;go()};
+$("ds").innerHTML="<table><tr><th>Earth site</th><th>Lat, Lon</th><th>Mean °C</th><th>Low °C</th><th>mm/yr</th><th>Elev m</th><th>Terrain</th><th>Note</th></tr>"+E.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}, ${s[2]}</td><td>${s[3]}</td><td>${s[4]}</td><td>${s[5]}</td><td>${s[6]}</td><td>${NM[s[7]]}</td><td>${s[11]}</td></tr>`).join("")+"</table>";
+$("src").innerHTML=`Method: Mars terrain, elevation and ice access are interpolated from 25 reference regions; temperature uses a latitude and elevation model; pressure follows an 11.1 km scale height. Values are approximate, compiled from published literature, and meant for first-pass screening. Public archives for checking the inputs yourself: <a class="ext" href="https://search.earthdata.nasa.gov/" target="_blank" rel="noopener">NASA Earthdata Search</a>, <a class="ext" href="https://worldview.earthdata.nasa.gov/index.html" target="_blank" rel="noopener">Worldview</a>, <a class="ext" href="https://pds.nasa.gov/" target="_blank" rel="noopener">NASA PDS</a> (MOLA, THEMIS, TES), <a class="ext" href="https://donnees-data.asc-csa.gc.ca/en/dataset/radarsat1" target="_blank" rel="noopener">CSA RADARSAT-1</a>, <a class="ext" href="https://dataspace.copernicus.eu/" target="_blank" rel="noopener">Copernicus Data Space</a>, <a class="ext" href="https://opensciencedata.esa.int/" target="_blank" rel="noopener">ESA Open Science Data</a> and <a class="ext" href="https://gportal.jaxa.jp/gpr/index/index" target="_blank" rel="noopener">JAXA G-Portal</a>.`;
+if(KEY){const s=document.createElement("script");s.src="https://maps.googleapis.com/maps/api/js?key="+KEY+"&callback=gmInit";document.head.appendChild(s);window.gmInit=()=>{gm=new google.maps.Map($("gm"),{center:{lat:20,lng:0},zoom:2,mapTypeId:"terrain"});$("gm").style.display="block";$("em").style.display="none";go()}}
+go();
+</script></body></html>
