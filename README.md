@@ -308,4 +308,8 @@ const KEY = "YOUR_GOOGLE_MAPS_API_KEY";
 
 ## 📄 License
 
-Released under the **MIT License**. Free for academic, educational, and planetary analog research use.
+Credits:
+- AbdElRahman Khaled
+- Ali Mohamed
+- Ahmed Mohamed
+- Michael Joseph
